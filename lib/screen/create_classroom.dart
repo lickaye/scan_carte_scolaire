@@ -2,6 +2,9 @@
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:scan_school/screen/scren_config.dart';
+import 'package:scan_school/utils/colors_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 
@@ -29,7 +32,7 @@ class _createClassRoomState extends State<createClassRoom> {
 
   Future dataBaseCreate(etab,salle,total) async {
     var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'salle.db');
+    String path = join(databasesPath, 'scan.db');
 
     // open the database
 
@@ -37,18 +40,37 @@ class _createClassRoomState extends State<createClassRoom> {
         onCreate: (Database db, int version) async {
           // When creating the db, create the table
           await db.execute(
-              'CREATE TABLE IF NOT EXISTS Salle (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT,  name_salle TEXT, total TEXT)');
+              'CREATE TABLE Salle  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT,  name_salle TEXT, total TEXT, type_examen TEXT)');
         });
 
-    // Check if a record with the given name_salle already exists
-    List<Map<String, dynamic>> existingRecords = await database.query('Salle',
-        where: 'name_salle = ?', whereArgs: [salle.trim()]);
 
+
+
+    // Check if a record with the given name_salle already exists
+
+    List<Map<String, dynamic>> existingRecords = await database.query(
+      'Salle',
+      where: 'name_salle = ? AND type_examen = ?',
+      whereArgs: [salle.trim(), name],
+    );
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (existingRecords.isEmpty) {
       // If no record found, insert a new one
+      prefs.setString('salleSession', salle.trim());
+      prefs.setString('type_examen_session', name);
+      prefs.setString('total_candidat', total);
+
       await database.insert('Salle',
-          {'name_etablissement': etab, 'name_salle': salle.trim(), 'total': total});
+          {'name_etablissement': etab, 'name_salle': salle.trim(), 'total': total, 'type_examen':name});
       print('Record inserted successfully.');
+      Navigator.push(
+          this.context,
+          MaterialPageRoute(
+              builder:
+                  (context) =>
+                  ScreenConfig(img: img,name: name,)));
+
       setState(() {
         salleExist = false;
       });
@@ -59,10 +81,6 @@ class _createClassRoomState extends State<createClassRoom> {
       // If a record with the same name_salle exists, you can choose to update it or handle it accordingly.
       print('Record with name_salle already exists.');
     }
-
-
-
-
 
    // print('student inserer');
     // Close the database connection
@@ -79,7 +97,7 @@ class _createClassRoomState extends State<createClassRoom> {
   //RECUPEATION DES SALLES
   Future<void> dataStudent() async {
 
-    final String path = join(await getDatabasesPath(), 'salle.db');
+    final String path = join(await getDatabasesPath(), 'scan.db');
     final Database database = await openDatabase(path, version: 1);
     //Delete the database
    // await deleteDatabase(path);
@@ -91,7 +109,7 @@ class _createClassRoomState extends State<createClassRoom> {
 
   @override
   void initState() {
-    dataStudent();
+    //dataStudent();
     // TODO: implement initState
     super.initState();
   }
@@ -111,7 +129,7 @@ class _createClassRoomState extends State<createClassRoom> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
-        backgroundColor: Colors.green,
+        backgroundColor: ColorsApp.colorPurpe,
       ),
           body: Container(
             margin:const  EdgeInsets.only(right: 15,left: 15),
@@ -181,9 +199,14 @@ class _createClassRoomState extends State<createClassRoom> {
           height: 25,
         ),
 
-        salleExist ? Text('Cette salle existe deja veuillez changer de salle',style: TextStyle(
-          color: Colors.red
-        ),):SizedBox(),
+        salleExist ?const  Center(
+          child: Text('Cette salle existe deja veuillez changer de salle',style: TextStyle(
+            color: Colors.red
+          ),),
+        ):SizedBox(),
+       const  SizedBox(
+          height: 8,
+        ),
         Center(
           child: GestureDetector(
             onTap: (){
@@ -196,7 +219,7 @@ class _createClassRoomState extends State<createClassRoom> {
             },
             child: Material(
               borderRadius: BorderRadius.circular(25),
-              color: const Color(0xFF27AE60),
+              color:   ColorsApp.colorPurpe,
               child: const Padding(
                 padding: EdgeInsets.only(right: 35,left: 35,top: 10,bottom: 10),
                   child:Text('Enregistrer',style: TextStyle(color: Colors.white,fontSize: 17),)),
@@ -252,19 +275,19 @@ class _createClassRoomState extends State<createClassRoom> {
                },
                controller: etablissementController,
                decoration: InputDecoration(
-                 prefixIcon: Icon(Icons.school),
+                 prefixIcon: const  Icon(Icons.school,color: ColorsApp.colorPurpe,),
                  hintText: "Etablissement ou centre",
-                 hintStyle: TextStyle(),
-                 enabledBorder: OutlineInputBorder(
+                 hintStyle: const TextStyle(),
+                 enabledBorder:const  OutlineInputBorder(
                    borderSide: BorderSide(color: Colors.white),
                  ),
                  focusedBorder: OutlineInputBorder(
-                   borderSide: BorderSide(color: Colors.white),
+                   borderSide: const BorderSide(color: Colors.white),
                    borderRadius: BorderRadius.circular(30)
                  ),
                  // Ajouter cette ligne pour désactiver la bordure de mise au point
                    focusColor: Colors.white,
-                   contentPadding: EdgeInsets.all(5)
+                   contentPadding: const EdgeInsets.all(5)
                ),
              ),
            ),
@@ -291,19 +314,19 @@ class _createClassRoomState extends State<createClassRoom> {
                controller: salleController,
                decoration: InputDecoration(
 
-                   prefixIcon: Icon(Icons.school),
+                   prefixIcon: const Icon(Icons.home_work_outlined,color: ColorsApp.colorPurpe),
                    hintText: "Entrer la salle",
                    hintStyle: TextStyle(),
-                   enabledBorder: OutlineInputBorder(
+                   enabledBorder: const OutlineInputBorder(
                      borderSide: BorderSide(color: Colors.white),
                    ),
-                   focusedBorder: OutlineInputBorder(
-                       borderSide: BorderSide(color: Colors.white),
+                   focusedBorder:   OutlineInputBorder(
+                       borderSide: const BorderSide(color: Colors.white),
                        borderRadius: BorderRadius.circular(30)
                    ),
                    // Ajouter cette ligne pour désactiver la bordure de mise au point
                    focusColor: Colors.white,
-                   contentPadding: EdgeInsets.all(5)
+                   contentPadding: const EdgeInsets.all(5)
                ),
              ),
            ),
@@ -330,19 +353,19 @@ class _createClassRoomState extends State<createClassRoom> {
                keyboardType: TextInputType.number,
                controller: candidatController,
                decoration: InputDecoration(
-                   prefixIcon: Icon(Icons.calculate),
+                   prefixIcon: const Icon(Icons.calculate,color: ColorsApp.colorPurpe),
                    hintText: "Nombre des candidats",
-                   hintStyle: TextStyle(),
-                   enabledBorder: OutlineInputBorder(
+                   hintStyle: const TextStyle(),
+                   enabledBorder: const OutlineInputBorder(
                      borderSide: BorderSide(color: Colors.white),
                    ),
                    focusedBorder: OutlineInputBorder(
-                       borderSide: BorderSide(color: Colors.white),
+                       borderSide:const  BorderSide(color: Colors.white),
                        borderRadius: BorderRadius.circular(30)
                    ),
                    // Ajouter cette ligne pour désactiver la bordure de mise au point
                    focusColor: Colors.white,
-                   contentPadding: EdgeInsets.all(5)
+                   contentPadding: const EdgeInsets.all(5)
                ),
              ),
            ),

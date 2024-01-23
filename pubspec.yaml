@@ -38,7 +38,7 @@ dependencies:
   pretty_qr_code: ^2.0.2
   flutter_barcode_scanner: ^2.0.0
   carousel_slider: ^4.2.1
-
+  shared_preferences: ^2.2.0
   sqflite: ^2.2.6
 
 
@@ -69,9 +69,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - lib/utils/
-     - asset/
-     - asset/bac
+    - lib/utils/
+    - asset/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -85,9 +85,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-     - family: productSans
-       fonts:
-         - asset: fonts/ProductSans-Regular.woff
+    - family: productSans
+      fonts:
+        - asset: fonts/ProductSans-Regular.woff
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

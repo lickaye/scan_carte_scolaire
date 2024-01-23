@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 
 import 'package:scan_school/screen/create_classroom.dart';
+import 'package:scan_school/screen/scren_config.dart';
 
 
 
@@ -140,12 +141,20 @@ class _IndexScreenState extends State<IndexScreen> {
 
             return GestureDetector(
               onTap: (){
+                /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder:
+                            (context) =>
+                            createClassRoom(img: img,name: name,)));*/
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder:
                             (context) =>
-                            createClassRoom(img: img,name: name,)));
+                            ScreenConfig(img: img,name: name,)));
+
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scan_school/screen/index.dart';
 import 'package:scan_school/screen/scan_qrcode.dart';
+import 'package:scan_school/utils/colors_app.dart';
 
 
 void main() {
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return  Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
-        backgroundColor: Colors.green,
+        backgroundColor: ColorsApp.colorPurpe,
       ),
       body: IndexScreen(),
     );
