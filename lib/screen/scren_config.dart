@@ -36,6 +36,6 @@ var sessionSalle;
   Widget build(BuildContext context) {
 
     print('sessionSalle:$sessionSalle');
-    return sessionSalle=='null' ? createClassRoom(img: img,name: name,):  ScanqrCode();
+    return sessionSalle=='null' ? createClassRoom(img: img,name: name,):  const ScanqrCode();
   }
 }

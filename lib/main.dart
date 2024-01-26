@@ -7,12 +7,14 @@ import 'package:scan_school/screen/scan_qrcode.dart';
 import 'package:scan_school/utils/colors_app.dart';
 
 
-void main() {
+void main() async{
 
 
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.white
+  // Définir la couleur de la barre d'état
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.white, // Couleur de la barre d'état
+    statusBarIconBrightness: Brightness.dark, // Icônes de la barre d'état en noir
   ));
   runApp(const MyApp());
 }
@@ -29,9 +31,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'productSans',
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        useMaterial3: false,
       ),
+      themeMode: ThemeMode.light,
       home:   MyHomePage(),
     );
   }
@@ -52,11 +55,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     return  Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
         toolbarHeight: 0,
-        backgroundColor: ColorsApp.colorPurpe,
+        backgroundColor: Colors.white,
       ),
-      body: IndexScreen(),
+      body: const IndexScreen(),
     );
   }
 }

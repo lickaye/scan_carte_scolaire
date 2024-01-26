@@ -1,14 +1,16 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 import 'dart:convert';
 
 import 'package:scan_school/screen/create_classroom.dart';
 import 'package:scan_school/screen/scren_config.dart';
-
-
+import 'package:sqflite/sqflite.dart';
 
 class IndexScreen extends StatefulWidget {
   const IndexScreen({super.key});
@@ -18,113 +20,187 @@ class IndexScreen extends StatefulWidget {
 }
 
 class _IndexScreenState extends State<IndexScreen> {
+  var data = [];
 
-  var data=[];
-  Future<void> fetchData() async{
+  Future<void> fetchData() async {
     String jsonString = await rootBundle.loadString('lib/utils/bac.json');
     // Convertir la chaîne JSON en une structure de données Dart
     List<dynamic> jsonData = json.decode(jsonString);
     var codeSearch = "TX75621029";
     var studentWithCode = jsonData.firstWhere(
-          (student) => student['code_eleve'] == codeSearch,
+      (student) => student['code_eleve'] == codeSearch,
       orElse: () => null,
     );
 
     print('dataSearch:${studentWithCode}');
-   setState(() {
-     data = jsonData;
-   });
+    setState(() {
+      data = jsonData;
+    });
 
     print("data ${data.length}");
   }
 
   List jsonExamen = [
     {
-      'id':1,
-      'name':'BAC',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 1,
+      'name': 'BAC',
+      'img': 'bac.png',
     },
     {
-      'id':2,
-      'name':'BET',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 2,
+      'name': 'BET',
+      'img': 'bet.jpg',
     },
     {
-      'id':3,
-      'name':'BEP',
-      'img':'https://lesechos-congobrazza.com/images/2019/CORNIV.jpg',
+      'id': 3,
+      'name': 'BEP',
+      'img': 'bep.png',
     },
     {
-      'id':4,
-      'name':'BTF',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 4,
+      'name': 'BTF',
+      'img': 'bep.png',
     },
     {
-      'id':5,
-      'name':'BT',
-      'img':'https://i.ytimg.com/vi/_MJ5ZAzKGBo/maxresdefault.jpg',
+      'id': 5,
+      'name': 'BT',
+      'img': 'bt.png',
     },
     {
-      'id':6,
-      'name':'CAP',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 6,
+      'name': 'CAP',
+      'img': 'cap.png',
     },
     {
-      'id':7,
-      'name':'Concours directs',
-      'img':'https://www.unicondevelopment.com/wp-content/uploads/brazzaville_congo_unicon_project_03.jpg',
+      'id': 7,
+      'name': 'Concours directs',
+      'img': 'concour_direct.png',
     },
     {
-      'id':8,
-      'name':'Examens de sortie',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 8,
+      'name': 'Examens de sortie',
+      'img': 'concour_direct.png',
     },
     {
-      'id':9,
-      'name':'Cancours professionnels',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
+      'id': 9,
+      'name': 'Cancours professionnels',
+      'img': 'concour_direct.png',
     }
   ];
 
+  Future<void> sqliteCreate() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'scan.db');
 
+    // open the database
+
+    Database database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+      // When creating the db, create the table
+      await db.execute(
+          'CREATE TABLE Salle  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT,  name_salle TEXT, total TEXT, type_examen TEXT)');
+
+      await db.execute(
+          'CREATE TABLE Presence  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT, '
+          ' name_salle TEXT, total TEXT, type_examen TEXT , nom TEXT, prenom TEXT, code_eleve TEXT, epreuve TEXT, date TEXT, time TEXT)');
+      await db.execute(
+          'CREATE TABLE  Absence  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT, '
+          ' name_salle TEXT, total TEXT, type_examen TEXT , nom TEXT, prenom TEXT, code_eleve TEXT, epreuve TEXT, motif TEXT, date TEXT, time TEXT)');
+    });
+
+    await database.close();
+  }
 
   @override
-  initState()   {
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  initState() {
+    sqliteCreate();
     fetchData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return   Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
 
+      /* body: Stack(
+        children: [
+          Stack(
+            children: [
+              CarouselSlider.builder(
+                options: CarouselOptions(
+
+                    enlargeCenterPage: true,
+                    viewportFraction: 1,
+                    height: MediaQuery.of(context).size.height,
+                    enableInfiniteScroll: 3 == 1 ? false : true,
+                    autoPlay: 3 == 1 ? false : true),
+                itemCount: jsonExamen.length,
+                itemBuilder: (context, index, realIndex) {
+                  var examen = jsonExamen[index];
+                  var img = examen['img'];
+                  var name = examen['name'];
+
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), // Couleur de l'ombre
+                            spreadRadius: 0.5,  // L'écart de diffusion de l'ombre
+                            blurRadius: 0.3,    // Le rayon de flou de l'ombre
+                            offset: Offset(0, 0.5), // L'offset de l'ombre par rapport à la boîte
+                          ),
+                        ],
+                        image:   DecorationImage(
+                          image:   AssetImage('asset/$img'),
+                          fit: BoxFit.fitHeight,
+                        )
+
+                    ),
+                  );
+                },
+              ),
+              Expanded(child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  color: Colors.black12.withOpacity(0.3),
+
+                ),
+              ))
+            ],
+          ),
+        Expanded(child:   getBody())
+        ],
+      ),*/
       body: getBody(),
     );
   }
 
-
-  Widget getBody(){
+  Widget getBody() {
     return Column(
       //mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(
-          height: 10,
-        ),
-          Center(
-            child: SizedBox(
-              height: 85,
-              child: Image.asset('asset/logo_dark.png'),
-            ),
-          ),
-        const SizedBox(
           height: 150,
         ),
-       Container(
-         margin: const EdgeInsets.only(right: 15,left: 15,bottom: 10),
-        // width: MediaQuery.of(context).size.width,
-           child: const  Text('Type examen',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),)),
-       const  SizedBox(
-          height: 10,
+        const Center(
+          child: Text(
+            "Ministère de l'enseignemt technique et professionnel",
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
+        const SizedBox(
+          height: 20,
         ),
         CarouselSlider.builder(
           options: CarouselOptions(
@@ -140,62 +216,57 @@ class _IndexScreenState extends State<IndexScreen> {
             var name = examen['name'];
 
             return GestureDetector(
-              onTap: (){
-                /*Navigator.push(
+              onTap: () {
+                name == 'BAC'  ? Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder:
-                            (context) =>
-                            createClassRoom(img: img,name: name,)));*/
-
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder:
-                            (context) =>
-                            ScreenConfig(img: img,name: name,)));
-
+                    PageTransition(
+                        type: PageTransitionType.topToBottom,
+                        child: ScreenConfig(
+                          img: img,
+                          name: name,
+                        ))):SizedBox();
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
-
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5), // Couleur de l'ombre
-                        spreadRadius: 0.5,  // L'écart de diffusion de l'ombre
-                        blurRadius: 0.3,    // Le rayon de flou de l'ombre
-                        offset: Offset(0, 0.5), // L'offset de l'ombre par rapport à la boîte
+                        color: Colors.grey.withOpacity(0.5),
+                        // Couleur de l'ombre
+                        spreadRadius: 0.5,
+                        // L'écart de diffusion de l'ombre
+                        blurRadius: 0.3,
+                        // Le rayon de flou de l'ombre
+                        offset: Offset(0,
+                            0.5), // L'offset de l'ombre par rapport à la boîte
                       ),
                     ],
-                    image:   DecorationImage(
-                        image: NetworkImage(img),
+                    image: DecorationImage(
+                      image: AssetImage('asset/$img'),
                       fit: BoxFit.cover,
-                    )
-
-                ),
+                    )),
               ),
             );
           },
         ),
-
-        const Expanded(
+        Expanded(
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text('Republique du congo',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                Text('Unite * Travail * Progres',style: TextStyle(fontSize: 11),),
+                Center(
+                  child: SizedBox(
+                    height: 85,
+                    child: Image.asset('asset/armoirie.png'),
+                  ),
+                ),
               ],
             ),
           ),
         )
-
       ],
     );
   }
-
-
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scan_school/utils/colors_app.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+import 'absence.dart';
 
 class ListePresence extends StatefulWidget {
   const ListePresence({super.key});
@@ -65,48 +69,162 @@ class _ListePresenceState extends State<ListePresence> {
     {'name': 'Samedi', 'id': 5},
     {'name': 'Dimanche', 'id': 6},
   ];
+  int activeTab = 1;
+  List _allCandidat = [];
+  List _allSalle = [];
 
+  //RECUPEATION DES CANDIDAT SCANNER
+  Future<void> dataStudent() async {
+
+    final String path = join(await getDatabasesPath(), 'scan.db');
+    final Database database = await openDatabase(path, version: 1);
+    //Delete the database
+    // await deleteDatabase(path);
+    _allCandidat = await database.query('Presence');
+    setState(() {
+      _allCandidat;
+    });
+  }
+
+  //RECUPERATION DES SALLLE
+
+  Future<void> dataSallle() async {
+
+    final String path = join(await getDatabasesPath(), 'scan.db');
+    final Database database = await openDatabase(path, version: 1);
+    //Delete the database
+    // await deleteDatabase(path);
+    _allSalle = await database.query('Salle');
+    setState(() {
+      _allSalle;
+    });
+  }
+
+  Future<void> getPresenceFromSalle(salles) async{
+
+    final String path = join(await getDatabasesPath(), 'scan.db');
+    final Database database = await openDatabase(path, version: 1);
+
+
+    List<Map<String, dynamic>> presenceData = await database.query(
+      'Presence',
+      where: 'name_salle = ? ',
+      whereArgs: [salles],
+    );
+
+    setState(() {
+      _allCandidat = presenceData;
+    });
+
+
+
+    await database.close();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dataStudent();
+    dataSallle();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: PreferredSize(
         preferredSize: const Size.fromHeight(135),
-          child: Column(
-          children: [
-            AppBar(
-              leadingWidth: MediaQuery.of(context).size.width,
-              automaticallyImplyLeading: true,
-              //backgroundColor: ColorsApp.colorPurpe,
-              leading:  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Text('Liste de presence'),
-                  PopupMenuButton(
-                      icon: const Icon(Icons.more_vert,color: Colors.black,),
-                      // color: Color(0xFF391C4A),
-                      itemBuilder: (context) => List.generate(jsonExamen.length,(index){
-                        var exam = jsonExamen[index];
-                        return  PopupMenuItem(
-                          child: Text(
-                            '${exam['name']}',
-                            style: TextStyle(
-                                fontSize: 12),
-                          ),
-                          onTap: () {
-
-                          },
-                        );
-                      })),
-                ],
-              ),
-            ),
-
-            menu()
-          ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text('Liste de présence',style: TextStyle(fontSize: 16),),
+              PopupMenuButton(
+                  icon: const Icon(Icons.more_vert,color: Colors.black,),
+                  // color: Color(0xFF391C4A),
+                  itemBuilder: (context) => List.generate(_allSalle.length,(index){
+                    var salle = _allSalle[index];
+                    return  PopupMenuItem(
+                      child: Text(
+                        'SALLE ${salle['name_salle']}',
+                        style: TextStyle(
+                            fontSize: 12),
+                      ),
+                      onTap: () {
+                        getPresenceFromSalle(salle['name_salle']);
+                      },
+                    );
+                  })),
+            ],
+          ),
         ),
-        )
+      body: getBody(),
     );
+  }
+
+  Widget getBody(){
+    return ListView.builder(
+        itemCount: _allCandidat.length,
+        itemBuilder: (context,index) {
+          var candidat = _allCandidat[index];
+          return Container(
+            margin:const EdgeInsets.only(right: 20,left: 20),
+            child: Card(
+                key: ValueKey(_allCandidat[index]['id']),
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: ListTile(
+                  leading: Text(candidat['id'].toString()),
+                  title: Row(
+                    children: [
+                      Text(candidat['nom'].toString(),),
+                      const SizedBox(width: 10,),
+                      Text(candidat['prenom'].toString(),)
+                    ],
+                  ),
+                  subtitle: Text(candidat['code_eleve'].toString(),),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min, // Set to MainAxisSize.min to allow the Row to occupy minimum space
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(color: ColorsApp.colorPurpe),
+                        ),
+                        padding: const EdgeInsets.all(8), // Adjust padding as needed
+                        child: Icon(Icons.check, color: ColorsApp.colorPurpe),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                        Absence(candidat: candidat,)));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(color: ColorsApp.colorPurpe),
+                          ),
+                          padding: const EdgeInsets.all(8), // Adjust padding as needed
+                          child: const Icon(Icons.close, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+            ),
+          );
+        });
   }
 
   Widget menu(){
@@ -117,8 +235,13 @@ class _ListePresenceState extends State<ListePresence> {
         children: List.generate(menuList.length, (index){
           var menu = menuList[index];
           return Padding(
-            padding: const EdgeInsets.all(15),
-            child: Container(
+            padding: const EdgeInsets.all(13),
+            child: GestureDetector(
+              onTap: (){
+                setState(() {
+                  activeTab = menu['id'];
+                });
+              },
 
               child: Column(
                 children: [
@@ -126,7 +249,7 @@ class _ListePresenceState extends State<ListePresence> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color:  ColorsApp.colorPurpe,
+                          color: activeTab == menu['id'] ?  ColorsApp.colorPurpe:Colors.transparent,
                           // Couleur de la barre noire
                           width: 3, // Épaisseur de la barre
                         ),
@@ -143,6 +266,16 @@ class _ListePresenceState extends State<ListePresence> {
           );
         }),
       ),
+    );
+  }
+
+  Widget getBodyMenu() {
+    return IndexedStack(
+      index: activeTab,
+      children: List.generate(menuList.length, (index){
+        var content = menuList[index];
+        return Text('${content['name']}');
+      }),
     );
   }
 }

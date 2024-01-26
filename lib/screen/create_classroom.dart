@@ -37,11 +37,7 @@ class _createClassRoomState extends State<createClassRoom> {
     // open the database
 
     Database database = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-          // When creating the db, create the table
-          await db.execute(
-              'CREATE TABLE Salle  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT,  name_salle TEXT, total TEXT, type_examen TEXT)');
-        });
+        );
 
 
 
@@ -60,6 +56,7 @@ class _createClassRoomState extends State<createClassRoom> {
       prefs.setString('salleSession', salle.trim());
       prefs.setString('type_examen_session', name);
       prefs.setString('total_candidat', total);
+      prefs.setString('name_etablissement', total);
 
       await database.insert('Salle',
           {'name_etablissement': etab, 'name_salle': salle.trim(), 'total': total, 'type_examen':name});
@@ -127,13 +124,17 @@ class _createClassRoomState extends State<createClassRoom> {
   Widget build(BuildContext context) {
     print("Lste des sallle:${_allSalle}");
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 0,
-        backgroundColor: ColorsApp.colorPurpe,
+        elevation: 0,
+        backgroundColor: Colors.white,
       ),
           body: Container(
             margin:const  EdgeInsets.only(right: 15,left: 15),
               child: SingleChildScrollView(child: getBody())),
+
+
 
     );
   }
@@ -185,7 +186,7 @@ class _createClassRoomState extends State<createClassRoom> {
                          ),
                        ],
                        image:   DecorationImage(
-                         image: NetworkImage(img),
+                         image: AssetImage('asset/$img'),
                          fit: BoxFit.cover,
                        )
 
@@ -199,7 +200,7 @@ class _createClassRoomState extends State<createClassRoom> {
           height: 25,
         ),
 
-        salleExist ?const  Center(
+        salleExist ? const  Center(
           child: Text('Cette salle existe deja veuillez changer de salle',style: TextStyle(
             color: Colors.red
           ),),
@@ -218,7 +219,8 @@ class _createClassRoomState extends State<createClassRoom> {
               }
             },
             child: Material(
-              borderRadius: BorderRadius.circular(25),
+              elevation: 3,
+              borderRadius: BorderRadius.circular(6),
               color:   ColorsApp.colorPurpe,
               child: const Padding(
                 padding: EdgeInsets.only(right: 35,left: 35,top: 10,bottom: 10),
