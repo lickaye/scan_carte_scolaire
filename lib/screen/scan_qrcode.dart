@@ -42,7 +42,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
     {
       'id': 4,
       'name': 'BTF',
-      'img': 'bep.png',
+      'img': 'btf.png',
     },
     {
       'id': 5,
@@ -62,12 +62,12 @@ class _ScanqrCodeState extends State<ScanqrCode> {
     {
       'id': 8,
       'name': 'Examens de sortie',
-      'img': 'concour_direct.png',
+      'img': 'exam_sortie.jpg',
     },
     {
       'id': 9,
       'name': 'Cancours professionnels',
-      'img': 'concour_direct.png',
+      'img': 'professionel.jpg',
     }
   ];
   String _data = "";
@@ -85,12 +85,12 @@ class _ScanqrCodeState extends State<ScanqrCode> {
             "#000000", "Cancel", true, ScanMode.BARCODE)
         .then((value) => setState(() => _data = value));
 
-    String jsonString = await rootBundle.loadString('lib/utils/bac.json');
+    String jsonString = await rootBundle.loadString('lib/utils/bac2.json');
     // Convertir la chaîne JSON en une structure de données Dart
     List<dynamic> jsonData = json.decode(jsonString);
     var codeSearch = "TX75621029";
     var studentWithCode = jsonData.firstWhere(
-      (student) => student['code_eleve'] == _data,
+      (student) => student['MATRICULE'] == _data,
       orElse: () => null,
     );
     addPresence(studentWithCode);
@@ -127,13 +127,14 @@ class _ScanqrCodeState extends State<ScanqrCode> {
           'CREATE TABLE IF NOT EXISTS  Presence  (id INTEGER PRIMARY KEY AUTOINCREMENT, name_etablissement TEXT, '
           ' name_salle TEXT, total TEXT, type_examen TEXT , nom TEXT, prenom TEXT, code_eleve TEXT, epreuve TEXT, date TEXT, time TEXT)');
     });
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var salle = prefs.getString('salleSession');
     List<Map<String, dynamic>> existingRecords = await database.query(
       'Presence',
-      where: 'code_eleve = ? ',
-      whereArgs: [candidat['code_eleve']],
+      where: 'code_eleve = ? AND name_salle = ?',
+      whereArgs: [candidat['code_eleve'], salle],
     );
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+
 
     if (existingRecords.isEmpty) {
       // If no record found, insert a new one
@@ -440,7 +441,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
 
-                  const Text('Scaner les candidats',style: TextStyle(fontSize: 17),),
+                    Text('Scaner les candidats {${salle.toString()}}',style: TextStyle(fontSize: 17),),
                   PopupMenuButton(
                       icon: const Icon(
                         Icons.more_vert,
@@ -507,6 +508,9 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                       child: Text('Scanner un candidat',style: TextStyle(fontSize: 16,color: ColorsApp.colorPurpe),)),
                 ),
               ),
+              const SizedBox(
+                height: 15,
+              ),
                
               Text(_data),
             ],
@@ -555,34 +559,38 @@ class _ScanqrCodeState extends State<ScanqrCode> {
             )
           : Column(
               children: [
+
                 SizedBox(
                   width: 120,
                   height: 120,
                   child: CircleAvatar(
-                    child: Image.asset(
-                      'asset/scan.png',
-                      fit: BoxFit.cover,
-                    ),
+                      backgroundImage: AssetImage('asset/${jsonCandidat['code_eleve']}.jpeg')
+
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      jsonCandidat['nom'],
-                      style: const TextStyle(fontSize: 18),
+                      jsonCandidat['NOM'],
+                      style: const TextStyle(fontSize: 22),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     Text(
-                      jsonCandidat['prenom'],
-                      style: const TextStyle(fontSize: 18),
+                      jsonCandidat['PRENOM'],
+                      style: const TextStyle(fontSize: 22),
                     )
                   ],
                 ),
                 Text(
-                  jsonCandidat['code_eleve'],
+                 "Code: ${ jsonCandidat['MATRICULE']}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 15,),
+                Text(
+                 "Date naissance: ${ jsonCandidat['DATE NAISSANCE']}",
                   style: const TextStyle(fontSize: 16),
                 ),
               ],

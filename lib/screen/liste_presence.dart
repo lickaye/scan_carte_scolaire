@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scan_school/utils/colors_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -13,53 +14,7 @@ class ListePresence extends StatefulWidget {
 }
 
 class _ListePresenceState extends State<ListePresence> {
-  List jsonExamen = [
-    {
-      'id':1,
-      'name':'BAC',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    },
-    {
-      'id':2,
-      'name':'BET',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    },
-    {
-      'id':3,
-      'name':'BEP',
-      'img':'https://lesechos-congobrazza.com/images/2019/CORNIV.jpg',
-    },
-    {
-      'id':4,
-      'name':'BTF',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    },
-    {
-      'id':5,
-      'name':'BT',
-      'img':'https://i.ytimg.com/vi/_MJ5ZAzKGBo/maxresdefault.jpg',
-    },
-    {
-      'id':6,
-      'name':'CAP',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    },
-    {
-      'id':7,
-      'name':'Concours directs',
-      'img':'https://www.unicondevelopment.com/wp-content/uploads/brazzaville_congo_unicon_project_03.jpg',
-    },
-    {
-      'id':8,
-      'name':'Examens de sortie',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    },
-    {
-      'id':9,
-      'name':'Cancours professionnels',
-      'img':'https://www.shutterstock.com/image-photo/city-brazzaville-congo-africa-daytime-600nw-2262418221.jpg',
-    }
-  ];
+
   List menuList = [
     {'name': 'Lundi', 'id': 0},
     {'name': 'Mardi', 'id': 1},
@@ -79,10 +34,17 @@ class _ListePresenceState extends State<ListePresence> {
     final String path = join(await getDatabasesPath(), 'scan.db');
     final Database database = await openDatabase(path, version: 1);
     //Delete the database
-    // await deleteDatabase(path);
-    _allCandidat = await database.query('Presence');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var salle = prefs.getString('salleSession');
+
+    List<Map<String, dynamic>> presenceData = await database.query(
+      'Presence',
+      where: 'name_salle = ? ',
+      whereArgs: [salle],
+    );
+
     setState(() {
-      _allCandidat;
+      _allCandidat = presenceData;
     });
   }
 
@@ -163,7 +125,7 @@ class _ListePresenceState extends State<ListePresence> {
   }
 
   Widget getBody(){
-    return ListView.builder(
+    return _allCandidat.isEmpty ? const Center(child: Text('Aucun candidat pour le moment'),): ListView.builder(
         itemCount: _allCandidat.length,
         itemBuilder: (context,index) {
           var candidat = _allCandidat[index];
@@ -174,7 +136,10 @@ class _ListePresenceState extends State<ListePresence> {
                 elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: ListTile(
-                  leading: Text(candidat['id'].toString()),
+                  leading: CircleAvatar(
+                    radius: 35,
+
+                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
                   title: Row(
                     children: [
                       Text(candidat['nom'].toString(),),
@@ -188,15 +153,7 @@ class _ListePresenceState extends State<ListePresence> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: ColorsApp.colorPurpe),
-                        ),
-                        padding: const EdgeInsets.all(8), // Adjust padding as needed
-                        child: Icon(Icons.check, color: ColorsApp.colorPurpe),
-                      ),
+
                       const SizedBox(
                         width: 8,
                       ),

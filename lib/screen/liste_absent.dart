@@ -113,7 +113,7 @@ class _listeAbsentState extends State<listeAbsent> {
   }
 
   Widget getBody(){
-    return ListView.builder(
+    return _allCandidat.isEmpty ? Center(child: Text('Aucun candidat pour le moment'),): ListView.builder(
         itemCount: _allCandidat.length,
         itemBuilder: (context,index) {
           var candidat = _allCandidat[index];
@@ -124,7 +124,9 @@ class _listeAbsentState extends State<listeAbsent> {
                 elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: ListTile(
-                  leading: Text(candidat['id'].toString()),
+                  leading: CircleAvatar(
+                      radius: 35,
+                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
                   title: Row(
                     children: [
                       Text(candidat['nom'].toString(),),
@@ -132,7 +134,17 @@ class _listeAbsentState extends State<listeAbsent> {
                       Text(candidat['prenom'].toString(),)
                     ],
                   ),
-                  subtitle: Text(candidat['code_eleve'].toString(),),
+                  subtitle: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(candidat['code_eleve'].toString(),),
+                      const SizedBox(height: 10,),
+                      Text("Epreuve: ${candidat['epreuve']}",),
+
+                      Text("Motif: ${candidat['motif']}",),
+                    ],
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min, // Set to MainAxisSize.min to allow the Row to occupy minimum space
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -145,7 +157,7 @@ class _listeAbsentState extends State<listeAbsent> {
                           border: Border.all(color: ColorsApp.colorPurpe),
                         ),
                         padding: const EdgeInsets.all(8), // Adjust padding as needed
-                        child: Icon(Icons.check, color: ColorsApp.colorPurpe),
+                        child: Icon(Icons.dangerous, color: Colors.red),
                       ),
                       const SizedBox(
                         width: 8,

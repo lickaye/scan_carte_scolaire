@@ -15,7 +15,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
         child: PrettyQr(
 
           size: 300,
-          data: 'TX28994208',
+          data: 'BGBB230149',
           errorCorrectLevel: QrErrorCorrectLevel.M,
           typeNumber: null,
           roundEdges: true,

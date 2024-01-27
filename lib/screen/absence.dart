@@ -122,7 +122,24 @@ class _AbsenceState extends State<Absence> {
               margin: EdgeInsets.only(top: MediaQuery.of(this.context).size.width/7),
               child:  getCompleted(),
             ),
+            Positioned(
 
+
+                child: Align(
+                  alignment: Alignment.center,
+                  child:Column(
+                    children: [
+                      CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
+                     const  SizedBox(
+                        height: 20,
+                      ),
+                      
+                      Text('${candidat['nom']}  ${candidat['prenom']}',style: const TextStyle(fontSize: 17),)
+                    ],
+                  ),
+                ))
           ],
         ),
         const SizedBox(

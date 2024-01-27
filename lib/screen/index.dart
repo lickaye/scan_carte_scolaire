@@ -59,7 +59,7 @@ class _IndexScreenState extends State<IndexScreen> {
     {
       'id': 4,
       'name': 'BTF',
-      'img': 'bep.png',
+      'img': 'btf.png',
     },
     {
       'id': 5,
@@ -79,12 +79,12 @@ class _IndexScreenState extends State<IndexScreen> {
     {
       'id': 8,
       'name': 'Examens de sortie',
-      'img': 'concour_direct.png',
+      'img': 'exam_sortie.jpg',
     },
     {
       'id': 9,
       'name': 'Cancours professionnels',
-      'img': 'concour_direct.png',
+      'img': 'professionel.jpg',
     }
   ];
 
@@ -111,11 +111,7 @@ class _IndexScreenState extends State<IndexScreen> {
     await database.close();
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
+
 
   @override
   initState() {
@@ -217,14 +213,44 @@ class _IndexScreenState extends State<IndexScreen> {
 
             return GestureDetector(
               onTap: () {
-                name == 'BAC'  ? Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.topToBottom,
-                        child: ScreenConfig(
-                          img: img,
-                          name: name,
-                        ))):SizedBox();
+                name == 'BAC'
+                    ? Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            child: ScreenConfig(
+                              img: img,
+                              name: name,
+                            )))
+                    : showModalBottomSheet(
+
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(
+                                20.0), // Ajustez le rayon pour arrondir les coins
+                          ),
+                        ),
+
+                        builder: (BuildContext context) {
+                          return   Container(
+                            margin: const EdgeInsets.only(left: 15,right: 15),
+
+                            height: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.swipe_up,size: 35,color: Colors.red,),
+                               const  Text(
+                                  "Oups! le scan candidat de cette examen n'est pas disponible pour le moment.selectionnez le BAC",
+                                  style: TextStyle(fontSize: 17,color: Colors.black),
+                                ),
+
+                              ],
+                            ),
+                          );
+                        },
+                      );
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -236,7 +262,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         // Couleur de l'ombre
                         spreadRadius: 0.5,
                         // L'écart de diffusion de l'ombre
-                        blurRadius: 0.3,
+                        blurRadius: 1,
                         // Le rayon de flou de l'ombre
                         offset: Offset(0,
                             0.5), // L'offset de l'ombre par rapport à la boîte

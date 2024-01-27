@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:scan_school/utils/colors_app.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'detail_search.dart';
 
 class SearchCandidat extends StatefulWidget {
   const SearchCandidat({super.key});
@@ -136,28 +139,38 @@ class _SearchCandidatState extends State<SearchCandidat> {
         itemCount: _foundUsers.length,
           itemBuilder: (context,index) {
           var candidat = _foundUsers[index];
-          return Container(
-            margin:const EdgeInsets.only(right: 20,left: 20),
-            color: Colors.white,
-            child: Card(
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType
+                          .fade,
+                      child:   detailSearch(candidat: candidat,)));
+            },
+            child: Container(
+              margin:const EdgeInsets.only(right: 20,left: 20),
               color: Colors.white,
+              child: Card(
+                color: Colors.white,
 
-              key: ValueKey(_foundUsers[index]['id']),
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: ListTile(
-                leading: Text(candidat['id'].toString()),
-                title: Row(
-                children: [
-                Text(candidat['nom'].toString(),),
-                 const  SizedBox(width: 10,),
-                  Text(candidat['prenom'].toString(),)
-                ],
-                ),
-                subtitle: Text(candidat['code_eleve'].toString(),),
+                key: ValueKey(_foundUsers[index]['id']),
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: ListTile(
+                  leading: Text(candidat['id'].toString()),
+                  title: Row(
+                  children: [
+                  Text(candidat['nom'].toString(),),
+                   const  SizedBox(width: 10,),
+                    Text(candidat['prenom'].toString(),)
+                  ],
+                  ),
+                  subtitle: Text(candidat['code_eleve'].toString(),),
 
 
-              )),
+                )),
+            ),
           );
           }),
     );

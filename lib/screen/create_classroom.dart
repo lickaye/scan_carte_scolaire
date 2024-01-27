@@ -39,9 +39,6 @@ class _createClassRoomState extends State<createClassRoom> {
     Database database = await openDatabase(path, version: 1,
         );
 
-
-
-
     // Check if a record with the given name_salle already exists
 
     List<Map<String, dynamic>> existingRecords = await database.query(
@@ -68,16 +65,22 @@ class _createClassRoomState extends State<createClassRoom> {
                   (context) =>
                   ScreenConfig(img: img,name: name,)));
 
+
       setState(() {
         salleExist = false;
       });
+
     } else {
+
       setState(() {
         salleExist = true;
       });
+
       // If a record with the same name_salle exists, you can choose to update it or handle it accordingly.
       print('Record with name_salle already exists.');
     }
+
+
 
    // print('student inserer');
     // Close the database connection
@@ -114,10 +117,11 @@ class _createClassRoomState extends State<createClassRoom> {
 
   @override
   void dispose() {
+
+    super.dispose();
     etablissementController.dispose();
     salleController.dispose();
     candidatController.dispose();
-    super.dispose();
   }
 
   @override
@@ -478,15 +482,25 @@ class _createClassRoomState extends State<createClassRoom> {
                   ),
                   const Text('This is a bottom sheet'),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      dataBaseCreate(etablissementController.text,salleController.text,candidatController.text);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 30,left: 30),
-                        child: Text('Valider')),
-                  ),
+
+
+                  Center(
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                        dataBaseCreate(etablissementController.text,salleController.text,candidatController.text);
+                      },
+                      child: Material(
+                        elevation: 3,
+                        borderRadius: BorderRadius.circular(6),
+                        color:   ColorsApp.colorPurpe,
+                        child: const Padding(
+                            padding: EdgeInsets.only(right: 35,left: 35,top: 10,bottom: 10),
+                            child:Text('Valider',style: TextStyle(color: Colors.white,fontSize: 17),)),
+
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
