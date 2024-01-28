@@ -129,38 +129,47 @@ class _ScanqrCodeState extends State<ScanqrCode> {
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var salle = prefs.getString('salleSession');
-    List<Map<String, dynamic>> existingRecords = await database.query(
-      'Presence',
-      where: 'code_eleve = ? AND name_salle = ?',
-      whereArgs: [candidat['MATRICULE'], salle],
-    );
+
+    if (candidat != null) {
+      // Access 'MATRICULE' only if candidat is not null
+      String matricule = candidat['MATRICULE'];
+      List<Map<String, dynamic>> existingRecords = await database.query(
+        'Presence',
+        where: 'code_eleve = ? AND name_salle = ?',
+        whereArgs: [candidat['MATRICULE'], salle],
+      );
 
 
-    if (existingRecords.isEmpty) {
-      // If no record found, insert a new one
-      var salle = prefs.getString('salleSession');
-      var examen = prefs.getString('type_examen_session');
-      var total = prefs.getString('total_candidat');
-      var etab = prefs.getString('name_etablissement');
-      var epreuve = '0';
+      if (existingRecords.isEmpty) {
+        // If no record found, insert a new one
+        var salle = prefs.getString('salleSession');
+        var examen = prefs.getString('type_examen_session');
+        var total = prefs.getString('total_candidat');
+        var etab = prefs.getString('name_etablissement');
+        var epreuve = '0';
 
-      await database.insert('Presence', {
-        'name_etablissement': etab,
-        'name_salle': salle,
-        'total': total,
-        'type_examen': examen,
-        'nom': candidat['NOM'],
-        'prenom': candidat['PRENOM'],
-        'code_eleve': candidat['MATRICULE'],
-        'epreuve': epreuve,
-        'date': _getCurrentDate(),
-        'time': _getCurrentTime()
-      });
-      print('Presence inserted successfully.');
-    } else {
-      // If a record with the same name_salle exists, you can choose to update it or handle it accordingly.
-      print('Presnce with name_salle already exists.');
+        await database.insert('Presence', {
+          'name_etablissement': etab,
+          'name_salle': salle,
+          'total': total,
+          'type_examen': examen,
+          'nom': candidat['NOM'],
+          'prenom': candidat['PRENOM'],
+          'code_eleve': candidat['MATRICULE'],
+          'epreuve': epreuve,
+          'date': _getCurrentDate(),
+          'time': _getCurrentTime()
+        });
+        print('Presence inserted successfully.');
+      } else {
+        // If a record with the same name_salle exists, you can choose to update it or handle it accordingly.
+        print('Presnce with name_salle already exists.');
+      }
+      // Proceed with your logic using matricule
     }
+
+
+
     _allPresence = await database.query('Presence');
     setState(() {
       _allPresence;
