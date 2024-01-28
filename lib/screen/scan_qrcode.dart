@@ -132,7 +132,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
     List<Map<String, dynamic>> existingRecords = await database.query(
       'Presence',
       where: 'code_eleve = ? AND name_salle = ?',
-      whereArgs: [candidat['code_eleve'], salle],
+      whereArgs: [candidat['MATRICULE'], salle],
     );
 
 
@@ -149,9 +149,9 @@ class _ScanqrCodeState extends State<ScanqrCode> {
         'name_salle': salle,
         'total': total,
         'type_examen': examen,
-        'nom': candidat['nom'],
-        'prenom': candidat['prenom'],
-        'code_eleve': candidat['code_eleve'],
+        'nom': candidat['NOM'],
+        'prenom': candidat['PRENOM'],
+        'code_eleve': candidat['MATRICULE'],
         'epreuve': epreuve,
         'date': _getCurrentDate(),
         'time': _getCurrentTime()
@@ -351,7 +351,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
           ],
         ),
       ),
-      body: getBodyMenu(),
+      body:   getBodyMenu(),
     );
   }
 
@@ -501,8 +501,8 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                 child: Material(
                   elevation: 3,
                   borderRadius: BorderRadius.circular(6),
-                   
-                  
+
+
                   child:   const Padding(
                     padding:  EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
                       child: Text('Scanner un candidat',style: TextStyle(fontSize: 16,color: ColorsApp.colorPurpe),)),
@@ -511,7 +511,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
               const SizedBox(
                 height: 15,
               ),
-               
+
               Text(_data),
             ],
           ),
@@ -551,10 +551,19 @@ class _ScanqrCodeState extends State<ScanqrCode> {
     return Container(
       child: jsonCandidat == null
           ? Center(
-              child: Text(
-                'Les informations du Qr code ne fait pas partie de la liste des candidats',
-                style: TextStyle(),
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+               SizedBox(
+                 width: MediaQuery.of(this.context).size.width/1.5,
+                 height: MediaQuery.of(this.context).size.width/2.2,
+                 child: Image.asset('asset/faux.jpeg',fit: BoxFit.cover,),
+               ),
+                  Text(
+                    'Les informations du Qr code ne fait pas partie de la liste des candidats',
+                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  )
+                ],
               ),
             )
           : Column(
@@ -564,7 +573,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                   width: 120,
                   height: 120,
                   child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/${jsonCandidat['code_eleve']}.jpeg')
+                      backgroundImage: AssetImage('asset/${jsonCandidat['MATRICULE']}.jpeg')
 
                   ),
                 ),

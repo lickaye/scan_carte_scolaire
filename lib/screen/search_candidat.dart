@@ -24,7 +24,7 @@ class _SearchCandidatState extends State<SearchCandidat> {
   List _foundUsers=[];
 
   Future<void> candidatStudent() async {
-    String jsonString = await rootBundle.loadString('lib/utils/bac.json');
+    String jsonString = await rootBundle.loadString('lib/utils/bac2.json');
     // Convertir la chaîne JSON en une structure de données Dart
     List<dynamic> jsonData = json.decode(jsonString);
 
@@ -41,7 +41,7 @@ class _SearchCandidatState extends State<SearchCandidat> {
     if(enterKey.isEmpty){
       result = _allCandidat;
     }else{
-      result = _allCandidat.where((element)=>element['code_eleve'].toLowerCase().contains(enterKey.toLowerCase())).toList();
+      result = _allCandidat.where((element)=>element['MATRICULE'].toLowerCase().contains(enterKey.toLowerCase())).toList();
     }
 
     setState(() {
@@ -154,19 +154,16 @@ class _SearchCandidatState extends State<SearchCandidat> {
               child: Card(
                 color: Colors.white,
 
-                key: ValueKey(_foundUsers[index]['id']),
+                //key: ValueKey(_foundUsers[index]['CODE ETS']),
                 elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: ListTile(
-                  leading: Text(candidat['id'].toString()),
-                  title: Row(
-                  children: [
-                  Text(candidat['nom'].toString(),),
-                   const  SizedBox(width: 10,),
-                    Text(candidat['prenom'].toString(),)
-                  ],
+                  leading: Text(candidat['CODE ETS'].toString()),
+                  title: Container(
+                    width: MediaQuery.of(context).size.width/3,
+                    child: Text("${candidat['NOM']} ${candidat['PRENOM']}",maxLines: 2,),
                   ),
-                  subtitle: Text(candidat['code_eleve'].toString(),),
+                  subtitle: Text(candidat['MATRICULE'].toString(),),
 
 
                 )),

@@ -140,12 +140,9 @@ class _ListePresenceState extends State<ListePresence> {
                     radius: 35,
 
                       backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
-                  title: Row(
-                    children: [
-                      Text(candidat['nom'].toString(),),
-                      const SizedBox(width: 10,),
-                      Text(candidat['prenom'].toString(),)
-                    ],
+                  title: Container(
+                    width: MediaQuery.of(context).size.width/3,
+                    child: Text("${candidat['nom']} ${candidat['prenom']}",maxLines: 2,),
                   ),
                   subtitle: Text(candidat['code_eleve'].toString(),),
                   trailing: Row(

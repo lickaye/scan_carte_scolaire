@@ -71,7 +71,7 @@ class _IndexScreenState extends State<IndexScreen> {
       'name': 'CAP',
       'img': 'cap.png',
     },
-    {
+   /* {
       'id': 7,
       'name': 'Concours directs',
       'img': 'concour_direct.png',
@@ -85,7 +85,7 @@ class _IndexScreenState extends State<IndexScreen> {
       'id': 9,
       'name': 'Cancours professionnels',
       'img': 'professionel.jpg',
-    }
+    }*/
   ];
 
   Future<void> sqliteCreate() async {
