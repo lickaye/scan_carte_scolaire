@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scan_school/screen/index.dart';
+import 'package:scan_school/screen/mes_rapports.dart';
 import 'package:scan_school/screen/scan_qrcode.dart';
 import 'package:scan_school/utils/colors_app.dart';
 

@@ -8,9 +8,8 @@ import 'package:path/path.dart';
 
 import 'dart:convert';
 
-import 'package:scan_school/screen/create_classroom.dart';
 import 'package:scan_school/screen/scren_config.dart';
-import 'package:sqflite/sqflite.dart';
+
 
 class IndexScreen extends StatefulWidget {
   const IndexScreen({super.key});
@@ -242,7 +241,7 @@ class _IndexScreenState extends State<IndexScreen> {
                               children: [
                                 const Icon(Icons.swipe_up,size: 35,color: Colors.red,),
                                const  Text(
-                                  "Oups! le scan candidat de cette examen n'est pas disponible pour le moment.selectionnez le BAC",
+                                  "Oups! le scan candidat de cet examen n'est pas disponible pour le moment.Sélectionnez le BAC",
                                   style: TextStyle(fontSize: 17,color: Colors.black),
                                 ),
 

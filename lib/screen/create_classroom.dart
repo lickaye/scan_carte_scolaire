@@ -88,6 +88,8 @@ class _createClassRoomState extends State<createClassRoom> {
 
 //06 480 62 32 louisane
 
+  //065308601 loyvia
+
   }
 
 
@@ -160,7 +162,7 @@ class _createClassRoomState extends State<createClassRoom> {
           height: 20,
         ),
         const Text('La classe virtuelle',style: TextStyle(fontSize: 25,fontWeight: FontWeight.w500),),
-        const Text('Veuillez remplir le formulaire afin de poursuire le processus de scan des candidats',style: TextStyle(fontSize: 13),),
+        const Text('Veuillez remplir le formulaire afin de poursuivre le processus de scan des candidats',style: TextStyle(fontSize: 13),),
 
         const SizedBox(
           height: 25,
@@ -205,7 +207,7 @@ class _createClassRoomState extends State<createClassRoom> {
         ),
 
         salleExist ? const  Center(
-          child: Text('Cette salle existe deja veuillez changer de salle',style: TextStyle(
+          child: Text('Cette salle existe déjà veuillez changer de salle',style: TextStyle(
             color: Colors.red
           ),),
         ):SizedBox(),
@@ -343,7 +345,7 @@ class _createClassRoomState extends State<createClassRoom> {
            Container(
                width: MediaQuery.of(this.context).size.width,
                margin:const  EdgeInsets.only(bottom: 10,left: 5),
-               child: const  Text("Nombres total des candidats")),
+               child: const  Text("Nombre total des candidats")),
            Container(
              decoration: BoxDecoration(
                  color: const Color(0xFFF5F5F5),
@@ -408,7 +410,7 @@ class _createClassRoomState extends State<createClassRoom> {
                         size: 70,
                       ),
                       const Text(
-                        'votre message a été envoyé avec succès',
+                        'Votre message a été envoyé avec succès',
                         style:TextStyle(),
                       ),
                       GestureDetector(

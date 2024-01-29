@@ -450,7 +450,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
 
-                    Text('Scaner les candidats {${salle.toString()}}',style: TextStyle(fontSize: 17),),
+                    Text('Scanner les candidats {${salle.toString()}}',style: const TextStyle(fontSize: 17),),
                   PopupMenuButton(
                       icon: const Icon(
                         Icons.more_vert,
@@ -568,7 +568,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                  child: Image.asset('asset/faux.jpeg',fit: BoxFit.cover,),
                ),
                   Text(
-                    'Les informations du Qr code ne fait pas partie de la liste des candidats',
+                    'Les informations du Qr code ne font pas partie de la liste des candidats',
                     style: TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   )

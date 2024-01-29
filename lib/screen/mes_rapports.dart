@@ -33,7 +33,7 @@ class _mesRapportsState extends State<mesRapports> {
       var csv = mapListToCsv(result);
 
       if (csv != null) {
-        await saveCsvFileToDownloads(csv);
+        await saveCsvFile(csv);
       }
     } catch (e) {
       print('Erreur lors de la conversion ou de l\'enregistrement du fichier CSV : $e');
@@ -42,23 +42,60 @@ class _mesRapportsState extends State<mesRapports> {
     }
   }
 
-  Future<void> saveCsvFileToDownloads(String csv) async {
-    try {
+  Future<void> saveCsvFile(String csv) async {
 
-      final directory = await getApplicationDocumentsDirectory(); // Obtenir le dossier des documents de l'application
+    try {
+      // Obtenir le dossier racine du stockage externe
+      final directory = await getApplicationDocumentsDirectory();
+
+      // Créer le dossier `scan_school` si nécessaire
+      if (!await directory!.exists()) {
+        await directory?.create(recursive: true);
+      }
+
+      // Obtenir le chemin du fichier CSV
       final path = directory.path + '/excel.csv';
 
-
+      // Créer le fichier CSV
       File file = File(path);
+
+      // Écrire le contenu du fichier CSV
       await file.writeAsString(csv);
 
+      // Afficher un message de confirmation
+      print('Fichier CSV enregistré avec succès : $path');
 
-      print('Fichier CSV enregistré avec succès à la racine du stockage externe : $path');
     } catch (e) {
+      // Afficher un message d'erreur
       print('Erreur lors de l\'enregistrement du fichier CSV : $e');
     }
   }
 
+
+  Future<void> moveFile() async {
+    // Obtenir le chemin du dossier de l'application
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+    // Spécifier le chemin du fichier dans le dossier de l'application
+    String filePathInApp = '$appDocPath/app_flutter/your_file_name.txt';
+
+    // Spécifier le chemin du dossier public (par exemple, le dossier des images)
+    String publicFolderPath = '/storage/emulated/0/Download';
+
+    try {
+      // Vérifier si le fichier existe
+      if (await File(filePathInApp).exists()) {
+        // Déplacer le fichier vers le dossier public
+        File(filePathInApp).copy('$publicFolderPath/your_file_name.txt');
+        print('Fichier déplacé avec succès.');
+      } else {
+        print('Le fichier n\'existe pas.');
+      }
+    } catch (e) {
+      print('Erreur lors du déplacement du fichier : $e');
+    }
+  }
 
   String? mapListToCsv(List<Map<String, Object?>>? mapList,
       {ListToCsvConverter? converter}) {
@@ -105,25 +142,6 @@ class _mesRapportsState extends State<mesRapports> {
 
 
 
-// ...
-
-  Future<void> saveCsvFile(String csv) async {
-    try {
-      //final String dir = (await getExternalStorageDirectory())!.path;
-      final String path = '/storage/emulated/0/scan_data.csv';  // Chemin absolu vers la racine du stockage externe
-
-      //final String path = '$dir/scan_data.csv';
-
-      File file = File(path);
-      await file.writeAsString(csv);
-
-      print('Fichier CSV enregistré avec succès à : $path');
-    } catch (e) {
-      print('Erreur lors de l\'enregistrement du fichier CSV : $e');
-    }
-  }
-
-// ...
 
 
 
@@ -188,13 +206,13 @@ class _mesRapportsState extends State<mesRapports> {
           ],
         ),
       ),
-     body: Center(child: const Text('Aucun élément pour le moment')),
-     /* body: GestureDetector(
+     //body: Center(child: const Text('Aucun élément pour le moment')),
+      body: GestureDetector(
         onTap: (){
           convert();
         },
         child: Text("click here"),
-      ),*/
+      ),
     );
   }
 }
