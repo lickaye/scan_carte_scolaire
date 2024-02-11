@@ -92,7 +92,7 @@ class _listeAbsentState extends State<listeAbsent> {
                   var salle = _allSalle[index];
                   return  PopupMenuItem(
                     child: Text(
-                      'SALLE ${salle['name_salle']}',
+                      'SALLE ${salle['name_salle']} [${salle['name_etablissement']}]',
                       style: TextStyle(
                           fontSize: 12),
                     ),
@@ -126,7 +126,7 @@ class _listeAbsentState extends State<listeAbsent> {
                 child: ListTile(
                   leading: CircleAvatar(
                       radius: 35,
-                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
+                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpg')),
                   title: Container(
                     width: MediaQuery.of(context).size.width/3,
                     child: Text("${candidat['nom']} ${candidat['prenom']}",maxLines: 2,),

@@ -77,10 +77,12 @@ class _ScanqrCodeState extends State<ScanqrCode> {
   String total = "";
   String img = "";
   var jsonCandidat;
+  bool isLoadingScan=false;
   var epreuve = 1;
   List<Map<String, dynamic>> _allPresence = [];
 
   _scan() async {
+
     await FlutterBarcodeScanner.scanBarcode(
             "#000000", "Cancel", true, ScanMode.BARCODE)
         .then((value) => setState(() => _data = value));
@@ -97,6 +99,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
 
     setState(() {
       jsonCandidat = studentWithCode;
+      isLoadingScan = false;
     });
 
     print('dataSearch:${studentWithCode}');
@@ -139,7 +142,6 @@ class _ScanqrCodeState extends State<ScanqrCode> {
         whereArgs: [candidat['MATRICULE'], salle],
       );
 
-
       if (existingRecords.isEmpty) {
         // If no record found, insert a new one
         var salle = prefs.getString('salleSession');
@@ -167,8 +169,6 @@ class _ScanqrCodeState extends State<ScanqrCode> {
       }
       // Proceed with your logic using matricule
     }
-
-
 
     _allPresence = await database.query('Presence');
     setState(() {
@@ -286,7 +286,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                         ),
                         const Text(
                           'Scan Candidat',
-                          style: TextStyle(color: Colors.black,fontSize: 17),
+                          style: TextStyle(color: Colors.black, fontSize: 17),
                         )
                       ],
                     ),
@@ -308,8 +308,6 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     onTap: () {
-
-
                                       Navigator.push(
                                           context,
                                           PageTransition(
@@ -360,7 +358,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
           ],
         ),
       ),
-      body:   getBodyMenu(),
+      body: getBodyMenu(),
     );
   }
 
@@ -445,12 +443,16 @@ class _ScanqrCodeState extends State<ScanqrCode> {
         children: [
           Column(
             children: [
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-
-                    Text('Scanner les candidats {${salle.toString()}}',style: const TextStyle(fontSize: 17),),
+                  Text(
+                    'Scanner les candidats {${salle.toString()}}',
+                    style: const TextStyle(fontSize: 17),
+                  ),
                   PopupMenuButton(
                       icon: const Icon(
                         Icons.more_vert,
@@ -462,7 +464,7 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                             var salle = _allSalle[index];
                             return PopupMenuItem(
                               child: Text(
-                                'SALLE ${salle['name_salle']}',
+                                'SALLE ${salle['name_salle']} [${salle['name_etablissement']}]',
                                 style: TextStyle(fontSize: 12),
                               ),
                               onTap: () {
@@ -506,21 +508,28 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                 height: 30,
               ),
               GestureDetector(
-                onTap: ()=>_scan(),
+                onTap: () async{
+                  setState(() {
+                    isLoadingScan = true;
+                  });
+                  _scan();
+                },
                 child: Material(
                   elevation: 3,
                   borderRadius: BorderRadius.circular(6),
-
-
-                  child:   const Padding(
-                    padding:  EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
-                      child: Text('Scanner un candidat',style: TextStyle(fontSize: 16,color: ColorsApp.colorPurpe),)),
+                  child: const Padding(
+                      padding: EdgeInsets.only(
+                          left: 20, right: 20, top: 10, bottom: 10),
+                      child: Text(
+                        'Scanner un candidat',
+                        style: TextStyle(
+                            fontSize: 16, color: ColorsApp.colorPurpe),
+                      )),
                 ),
               ),
               const SizedBox(
                 height: 15,
               ),
-
               Text(_data),
             ],
           ),
@@ -537,11 +546,11 @@ class _ScanqrCodeState extends State<ScanqrCode> {
                               name: examen,
                             )));
               },
-              child:   Material(
+              child: Material(
                 elevation: 3,
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50),
-                child:   const Padding(
+                child: const Padding(
                     padding: EdgeInsets.all(13),
                     child: Icon(
                       Icons.add,
@@ -558,15 +567,18 @@ class _ScanqrCodeState extends State<ScanqrCode> {
 
   Widget resultSan() {
     return Container(
-      child: jsonCandidat == null
+      child: isLoadingScan ? const Center(child: CircularProgressIndicator(color: ColorsApp.colorPurpe,),): jsonCandidat == null
           ? Center(
               child: Column(
                 children: [
-               SizedBox(
-                 width: MediaQuery.of(this.context).size.width/1.5,
-                 height: MediaQuery.of(this.context).size.width/2.2,
-                 child: Image.asset('asset/faux.jpeg',fit: BoxFit.cover,),
-               ),
+                  SizedBox(
+                    width: MediaQuery.of(this.context).size.width / 1.5,
+                    height: MediaQuery.of(this.context).size.width / 2.2,
+                    child: Image.asset(
+                      'asset/faux.jpeg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                   Text(
                     'Les informations du Qr code ne font pas partie de la liste des candidats',
                     style: TextStyle(color: Colors.red),
@@ -576,43 +588,49 @@ class _ScanqrCodeState extends State<ScanqrCode> {
               ),
             )
           : Column(
-              children: [
-
-                SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/${jsonCandidat['MATRICULE']}.jpeg')
-
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      jsonCandidat['NOM'],
-                      style: const TextStyle(fontSize: 22),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      jsonCandidat['PRENOM'],
-                      style: const TextStyle(fontSize: 22),
-                    )
-                  ],
-                ),
-                Text(
-                 "Code: ${ jsonCandidat['MATRICULE']}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 15,),
-                Text(
-                 "Date naissance: ${ jsonCandidat['DATE NAISSANCE']}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 120,
+            height: 120,
+            child: CircleAvatar(
+              backgroundImage: AssetImage('asset/${jsonCandidat['MATRICULE']}.jpg'),
             ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            width: MediaQuery.of(this.context).size.width / 1.05,
+            child: Text(
+              "${jsonCandidat['NOM']} ${jsonCandidat['PRENOM']}",
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 22),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "CODE: ${jsonCandidat['MATRICULE']}",
+                style: const TextStyle(fontSize: 16),
+              ),
+              SizedBox(width: 20), // Add some space between the two Text widgets
+              Text(
+                "DEPARTEMENT: ${jsonCandidat['DEPARTEMENT']}", // Assuming 'DEPARTEMENT' is the correct key
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            "DATE NAISSANCE: ${jsonCandidat['DATE NAISSANCE']}",
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 }

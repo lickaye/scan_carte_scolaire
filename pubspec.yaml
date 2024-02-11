@@ -43,6 +43,11 @@ dependencies:
   page_transition: ^2.1.0
   csv: ^5.1.1
   path_provider: ^2.0.15
+  http: ^1.2.0
+  excel: ^2.0.0
+
+
+
 
 
 
@@ -61,6 +66,15 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   sqflite_common_ffi:
+  change_app_package_name: ^1.1.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "asset/armoirie.png"
+  adaptive_icon_foreground: "asset/armoirie.png"
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

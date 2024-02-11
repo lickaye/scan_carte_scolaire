@@ -108,8 +108,8 @@ class _ListePresenceState extends State<ListePresence> {
                     var salle = _allSalle[index];
                     return  PopupMenuItem(
                       child: Text(
-                        'SALLE ${salle['name_salle']}',
-                        style: TextStyle(
+                        'SALLE ${salle['name_salle']} [${salle['name_etablissement']}]',
+                        style: const TextStyle(
                             fontSize: 12),
                       ),
                       onTap: () {
@@ -139,8 +139,8 @@ class _ListePresenceState extends State<ListePresence> {
                   leading: CircleAvatar(
                     radius: 35,
 
-                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpeg')),
-                  title: Container(
+                      backgroundImage: AssetImage('asset/${candidat['code_eleve']}.jpg')),
+                  title:   SizedBox(
                     width: MediaQuery.of(context).size.width/3,
                     child: Text("${candidat['nom']} ${candidat['prenom']}",maxLines: 2,),
                   ),
@@ -150,7 +150,6 @@ class _ListePresenceState extends State<ListePresence> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-
                       const SizedBox(
                         width: 8,
                       ),

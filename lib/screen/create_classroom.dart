@@ -53,7 +53,7 @@ class _createClassRoomState extends State<createClassRoom> {
       prefs.setString('salleSession', salle.trim());
       prefs.setString('type_examen_session', name);
       prefs.setString('total_candidat', total);
-      prefs.setString('name_etablissement', total);
+      prefs.setString('name_etablissement', etab);
 
       await database.insert('Salle',
           {'name_etablissement': etab, 'name_salle': salle.trim(), 'total': total, 'type_examen':name});
